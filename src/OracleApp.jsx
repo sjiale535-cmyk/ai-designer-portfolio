@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import VisionController from './VisionController.jsx'
 import { assetUrl } from './assetUrl.js'
 
@@ -155,85 +155,8 @@ const glyphs = [
   },
 ]
 
-const supplementalGlyphChars = Array.from('天地风云星光石土金玉竹草花林森牛羊犬豕虎兔蛇虫贝壶酒米麦黍稷果瓜丝衣冠巾刀弓矢戈盾王臣父母子女夫妻家室井泉川河海丘谷东西南北上下左右大小长短生死春夏秋冬朝暮早晚高低内外前后左右')
-
-const createArchivePaths = (seed) => {
-  const value = (step, min, max) => {
-    const raw = Math.sin(seed * 12.9898 + step * 78.233) * 43758.5453
-    return Math.round((min + (raw - Math.floor(raw)) * (max - min)) * 10) / 10
-  }
-  const variant = seed % 8
-  let paths
-  if (variant === 0) {
-    paths = [
-      `M${value(1, 16, 23)} ${value(2, 19, 27)} Q50 ${value(3, 10, 17)} ${value(4, 77, 84)} ${value(5, 20, 30)} L${value(6, 79, 87)} ${value(7, 77, 86)} Q50 ${value(8, 91, 96)} ${value(9, 14, 22)} ${value(10, 76, 85)} Z`,
-      `M${value(11, 19, 28)} 48 Q50 ${value(12, 42, 48)} ${value(13, 73, 82)} 51`,
-      `M49 ${value(14, 17, 25)} Q${value(15, 44, 56)} 50 51 ${value(16, 76, 87)}`,
-    ]
-  } else if (variant === 1) {
-    paths = [
-      `M${value(1, 14, 23)} 52 Q${value(2, 30, 39)} ${value(3, 17, 28)} ${value(4, 61, 72)} ${value(5, 27, 38)} Q${value(6, 86, 92)} 45 ${value(7, 74, 84)} 66 Q${value(8, 50, 61)} ${value(9, 88, 94)} ${value(10, 23, 34)} 72 Z`,
-      `M${value(11, 25, 36)} 68 L${value(12, 18, 29)} ${value(13, 87, 95)} M${value(14, 61, 72)} 68 L${value(15, 73, 84)} ${value(16, 87, 95)}`,
-      `M${value(17, 68, 78)} 31 L${value(18, 84, 93)} ${value(19, 20, 34)}`,
-    ]
-  } else if (variant === 2) {
-    paths = [
-      `M50 ${value(1, 8, 16)} L50 ${value(2, 84, 93)} M${value(3, 9, 18)} 50 L${value(4, 83, 92)} 50`,
-      `M${value(5, 20, 29)} ${value(6, 19, 29)} L${value(7, 76, 85)} ${value(8, 76, 87)} M${value(9, 78, 88)} ${value(10, 18, 29)} L${value(11, 18, 29)} ${value(12, 78, 88)}`,
-      `M50 ${value(13, 25, 34)} Q${value(14, 66, 77)} 50 50 ${value(15, 69, 79)} Q${value(16, 27, 37)} 50 50 ${value(13, 25, 34)} Z`,
-    ]
-  } else if (variant === 3) {
-    paths = [
-      `M${value(1, 21, 30)} 34 Q50 ${value(2, 21, 29)} ${value(3, 70, 80)} 34 L${value(4, 72, 82)} 70 Q50 ${value(5, 85, 94)} ${value(6, 18, 28)} 70 Z`,
-      `M${value(7, 20, 29)} 43 Q50 ${value(8, 53, 61)} ${value(9, 72, 82)} 43`,
-      `M${value(10, 23, 32)} 35 Q${value(11, 9, 17)} ${value(12, 29, 40)} ${value(13, 18, 26)} ${value(14, 54, 67)} M${value(15, 76, 84)} 35 Q${value(16, 91, 97)} ${value(17, 31, 42)} ${value(18, 82, 91)} ${value(19, 55, 68)}`,
-    ]
-  } else if (variant === 4) {
-    paths = [
-      `M${value(1, 8, 17)} ${value(2, 76, 87)} L${value(3, 26, 38)} ${value(4, 35, 48)} L${value(5, 46, 55)} ${value(6, 68, 79)} L${value(7, 64, 74)} ${value(8, 18, 31)} L${value(9, 88, 95)} ${value(10, 76, 87)}`,
-      `M${value(11, 18, 29)} ${value(12, 86, 94)} Q50 ${value(13, 78, 87)} ${value(14, 79, 90)} ${value(15, 88, 95)}`,
-      `M${value(16, 48, 57)} ${value(17, 20, 34)} L${value(18, 47, 56)} ${value(19, 88, 95)}`,
-    ]
-  } else if (variant === 5) {
-    paths = [
-      `M50 ${value(1, 7, 15)} Q${value(2, 44, 56)} 48 50 ${value(3, 87, 95)}`,
-      `M50 ${value(4, 26, 36)} Q${value(5, 29, 40)} ${value(6, 16, 28)} ${value(7, 13, 24)} ${value(8, 34, 46)} M50 ${value(9, 29, 41)} Q${value(10, 69, 80)} ${value(11, 16, 29)} ${value(12, 86, 94)} ${value(13, 37, 49)}`,
-      `M50 ${value(14, 58, 68)} Q${value(15, 30, 41)} ${value(16, 71, 81)} ${value(17, 19, 31)} ${value(18, 91, 97)} M50 ${value(19, 60, 71)} Q${value(20, 67, 79)} ${value(21, 73, 83)} ${value(22, 82, 92)} ${value(23, 91, 97)}`,
-    ]
-  } else if (variant === 6) {
-    paths = [
-      `M${value(1, 42, 49)} ${value(2, 10, 17)} Q50 ${value(3, 3, 9)} ${value(4, 52, 59)} ${value(5, 11, 18)} Q50 ${value(6, 22, 29)} ${value(1, 42, 49)} ${value(2, 10, 17)} Z`,
-      `M50 ${value(7, 23, 31)} L50 ${value(8, 64, 73)} M50 ${value(9, 37, 46)} L${value(10, 15, 26)} ${value(11, 55, 67)} M50 ${value(9, 37, 46)} L${value(12, 75, 86)} ${value(13, 52, 65)}`,
-      `M50 ${value(14, 65, 74)} L${value(15, 29, 40)} ${value(16, 91, 97)} M50 ${value(14, 65, 74)} L${value(17, 63, 74)} ${value(18, 91, 97)}`,
-    ]
-  } else {
-    paths = [
-      `M${value(1, 23, 34)} ${value(2, 7, 14)} Q${value(3, 72, 84)} ${value(4, 22, 34)} ${value(5, 29, 41)} ${value(6, 43, 55)} Q${value(7, 13, 25)} ${value(8, 65, 77)} ${value(9, 45, 57)} ${value(10, 91, 97)}`,
-      `M${value(11, 51, 63)} ${value(12, 12, 24)} Q${value(13, 20, 32)} ${value(14, 35, 47)} ${value(15, 68, 82)} ${value(16, 61, 74)} Q${value(17, 80, 91)} ${value(18, 81, 92)} ${value(19, 56, 69)} ${value(20, 91, 97)}`,
-      `M${value(21, 18, 29)} ${value(22, 53, 66)} L${value(23, 80, 92)} ${value(24, 45, 59)}`,
-    ]
-  }
-  paths.push(`M${value(50, 12, 28)} ${value(51, 27, 73)} Q${value(52, 42, 58)} ${value(53, 14, 86)} ${value(54, 72, 89)} ${value(55, 24, 78)}`)
-  return paths
-}
-
-const existingCharacters = new Set(glyphs.map((glyph) => glyph.char))
-const supplementalGlyphs = supplementalGlyphChars
-  .filter((char, index, collection) => !existingCharacters.has(char) && collection.indexOf(char) === index)
-  .slice(0, 96 - glyphs.length)
-  .map((char, index) => ({
-    char,
-    name: `${char} · ARCHIVE ${String(index + glyphs.length + 1).padStart(2, '0')}`,
-    meaning: `古文字「${char}」`,
-    desc: `以独立的刻写骨架呈现“${char}”的古文字意象。折线、弧线与交叉刻痕共同构成这一枚不重复的字形档案。`,
-    phrase: `一画入骨，${char}意相生`,
-    paths: createArchivePaths(index + 37),
-  }))
-
-const glyphArchive = [...glyphs, ...supplementalGlyphs]
-
-const instances = glyphArchive.map((glyph, index) => ({
-  ...glyph,
+const instances = Array.from({ length: 96 }, (_, index) => ({
+  ...glyphs[index % glyphs.length],
   id: index,
   seed: (index * 37 + 13) % 101,
 }))
@@ -248,7 +171,7 @@ const oracleTextureStyle = (index) => {
   }
 }
 
-const OracleGlyph = memo(function OracleGlyph({ glyph, className = '', ariaHidden = false }) {
+function OracleGlyph({ glyph, className = '', ariaHidden = false }) {
   const gradientId = `oracle-engraving-${useId().replace(/:/g, '')}`
   return (
     <svg className={`oracle-glyph ${className}`} viewBox="0 0 100 100" aria-hidden={ariaHidden} role={ariaHidden ? undefined : 'img'}>
@@ -270,7 +193,7 @@ const OracleGlyph = memo(function OracleGlyph({ glyph, className = '', ariaHidde
       <circle className="oracle-glyph__seal" cx="88" cy="14" r="1.35" />
     </svg>
   )
-})
+}
 
 function InkField({ pointerRef, activeRef }) {
   const canvasRef = useRef(null)
@@ -282,11 +205,9 @@ function InkField({ pointerRef, activeRef }) {
     let width = 0
     let height = 0
     let particles = []
-    let lastRender = 0
-    const frameInterval = 1000 / 30
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
       width = window.innerWidth
       height = window.innerHeight
       canvas.width = width * dpr
@@ -294,7 +215,7 @@ function InkField({ pointerRef, activeRef }) {
       canvas.style.width = `${width}px`
       canvas.style.height = `${height}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      particles = Array.from({ length: Math.min(72, Math.floor(width / 18)) }, (_, i) => ({
+      particles = Array.from({ length: Math.min(110, Math.floor(width / 12)) }, (_, i) => ({
         x: (i * 89) % width,
         y: (i * 53) % height,
         r: 0.5 + (i % 5) * 0.32,
@@ -303,12 +224,7 @@ function InkField({ pointerRef, activeRef }) {
       }))
     }
 
-    const render = (time) => {
-      if (document.hidden || time - lastRender < frameInterval) {
-        frame = requestAnimationFrame(render)
-        return
-      }
-      lastRender = time
+    const render = () => {
       ctx.clearRect(0, 0, width, height)
       const pointer = pointerRef.current
       const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 280)
@@ -346,7 +262,7 @@ function InkField({ pointerRef, activeRef }) {
 
 function EvolutionPanel({ glyph, onClose, onNext }) {
   const [phase, setPhase] = useState(0)
-  const glyphIndex = glyphArchive.findIndex((item) => item.char === glyph.char) + 1
+  const glyphIndex = glyphs.findIndex((item) => item.char === glyph.char) + 1
 
   useEffect(() => {
     setPhase(0)
@@ -406,7 +322,6 @@ export default function OracleApp() {
   const focusedNodeRef = useRef(-1)
   const fieldFrozenRef = useRef(false)
   const modeRef = useRef('drift')
-  const depthUiRef = useRef({ value: 1, time: 0 })
   const [selected, setSelected] = useState(null)
   const [mode, setMode] = useState('drift')
   const [depth, setDepth] = useState(1)
@@ -423,36 +338,16 @@ export default function OracleApp() {
   useEffect(() => {
     const width = window.innerWidth
     const height = window.innerHeight
-    nodesRef.current = instances.map((item, i) => {
-      const angle = ((i * 137.508 + item.seed * 3.7) % 360) * (Math.PI / 180)
-      const speed = 0.34 + (i % 8) * 0.045
-      const baseVx = Math.cos(angle) * speed
-      const baseVy = Math.sin(angle) * speed * 0.76
-      return {
+    nodesRef.current = instances.map((item, i) => ({
       x: 90 + ((item.seed * 173 + i * 59) % Math.max(300, width - 180)),
       y: 90 + ((item.seed * 97 + i * 83) % Math.max(260, height - 180)),
-      vx: baseVx,
-      vy: baseVy,
-      baseVx,
-      baseVy,
-      phase: item.seed * 0.37 + i,
+      vx: ((i % 5) - 2) * 0.055,
+      vy: (((i * 3) % 7) - 3) * 0.04,
       radius: 28 + (i % 4) * 7,
-      opacity: -1,
-      near: false,
-      focused: false,
-      zIndex: -1,
-      }
-    })
+    }))
 
     let frame
-    let lastTick = 0
-    const frameInterval = 1000 / 30
     const tick = (time) => {
-      if (document.hidden || time - lastTick < frameInterval) {
-        frame = requestAnimationFrame(tick)
-        return
-      }
-      lastTick = time
       const w = window.innerWidth
       const h = window.innerHeight
       const pointer = pointerRef.current
@@ -479,8 +374,11 @@ export default function OracleApp() {
           // 手势停在哪里，最近的字就在哪里稳定下来。
           node.x += (pointer.x - node.x) * 0.24
           node.y += (pointer.y - node.y) * 0.24
-          node.vx *= 0.82
-          node.vy *= 0.82
+          node.vx = 0
+          node.vy = 0
+        } else if (fieldFrozenRef.current) {
+          node.vx *= 0.72
+          node.vy *= 0.72
         } else if (currentMode === 'gather') {
           const angle = (i / nodesRef.current.length) * Math.PI * 2 + time * 0.00004
           const ring = Math.min(w, h) * (0.18 + (i % 3) * 0.075)
@@ -493,13 +391,13 @@ export default function OracleApp() {
           node.x += (w * 0.5 + Math.cos(angle) * rx - node.x) * 0.012
           node.y += (h * 0.5 + Math.sin(angle) * ry - node.y) * 0.012
         } else {
-          node.vx += (node.baseVx - node.vx) * 0.012 + Math.sin(time * 0.00065 + node.phase) * 0.0042
-          node.vy += (node.baseVy - node.vy) * 0.012 + Math.cos(time * 0.00058 + node.phase) * 0.0036
+          node.vx += Math.sin(time * 0.00023 + i * 1.7) * 0.0009
+          node.vy += Math.cos(time * 0.00019 + i * 1.3) * 0.0008
         }
 
-        if (!isFocused) {
-          node.vx *= 0.998
-          node.vy *= 0.998
+        if (!isFocused && !fieldFrozenRef.current) {
+          node.vx *= 0.996
+          node.vy *= 0.996
           node.x += node.vx * depthRef.current
           node.y += node.vy * depthRef.current
         }
@@ -515,25 +413,10 @@ export default function OracleApp() {
         const element = nodeRefs.current[i]
         if (element) {
           element.style.transform = `translate3d(${node.x}px, ${node.y}px, 0) translate(-50%, -50%) scale(${scale})`
-          const nextOpacity = Math.min(1, opacity)
-          if (Math.abs(nextOpacity - node.opacity) > 0.01) {
-            node.opacity = nextOpacity
-            element.style.opacity = nextOpacity
-          }
-          const nextZIndex = isFocused ? 18 : (proximity > 0.15 ? 12 : 1 + (i % 7))
-          if (nextZIndex !== node.zIndex) {
-            node.zIndex = nextZIndex
-            element.style.zIndex = nextZIndex
-          }
-          const isNear = isFocused || proximity > 0.36
-          if (isNear !== node.near) {
-            node.near = isNear
-            element.dataset.near = isNear ? 'true' : 'false'
-          }
-          if (isFocused !== node.focused) {
-            node.focused = isFocused
-            element.dataset.focused = isFocused ? 'true' : 'false'
-          }
+          element.style.opacity = Math.min(1, opacity)
+          element.style.zIndex = isFocused ? 18 : (proximity > 0.15 ? 12 : String(1 + (i % 7)))
+          element.dataset.near = isFocused || proximity > 0.36 ? 'true' : 'false'
+          element.dataset.focused = isFocused ? 'true' : 'false'
         }
       })
       frame = requestAnimationFrame(tick)
@@ -572,16 +455,10 @@ export default function OracleApp() {
 
   const setVisionDepth = useCallback((value) => {
     depthRef.current = value
-    const now = performance.now()
-    const previous = depthUiRef.current
-    if (now - previous.time >= 120 && Math.abs(value - previous.value) >= 0.015) {
-      depthUiRef.current = { value, time: now }
-      setDepth(Math.round(value * 100) / 100)
-    }
+    setDepth(value)
   }, [])
 
   const setVisionFreeze = useCallback((value) => {
-    if (fieldFrozenRef.current === value) return
     fieldFrozenRef.current = value
     setFieldFrozen(value)
   }, [])
@@ -627,12 +504,12 @@ export default function OracleApp() {
   }
 
   const awakenRandom = () => {
-    const candidates = glyphArchive.filter((glyph) => glyph.char !== selected?.char)
+    const candidates = glyphs.filter((glyph) => glyph.char !== selected?.char)
     setSelected(candidates[Math.floor(Math.random() * candidates.length)])
   }
 
   const nextGlyph = useCallback(() => {
-    setSelected((current) => glyphArchive[(Math.max(0, glyphArchive.findIndex((glyph) => glyph.char === current?.char)) + 1) % glyphArchive.length])
+    setSelected((current) => glyphs[(Math.max(0, glyphs.findIndex((glyph) => glyph.char === current?.char)) + 1) % glyphs.length])
   }, [])
 
   useEffect(() => {
@@ -656,7 +533,7 @@ export default function OracleApp() {
           <span>字醒</span>
           <strong>中原</strong>
         </a>
-        <div className="oracle-header__center">{glyphArchive.length} UNIQUE GLYPHS <i /> INTERACTIVE ARCHIVE</div>
+        <div className="oracle-header__center">24 GLYPHS · 96 TRACES <i /> INTERACTIVE ARCHIVE</div>
         <a className="oracle-back" href="/">返回作品集 <span>↗</span></a>
       </header>
 
@@ -719,15 +596,15 @@ export default function OracleApp() {
       <div className="oracle-archive-meter" aria-label={`已唤醒 ${awakened.size} 个甲骨文`}>
         <div>
           <span>AWAKENED ARCHIVE</span>
-          <b>{String(awakened.size).padStart(2, '0')}<i>/{glyphArchive.length}</i></b>
+          <b>{String(awakened.size).padStart(2, '0')}<i>/24</i></b>
         </div>
         <ol aria-hidden="true">
-          {glyphArchive.map((glyph) => <li key={glyph.char} className={awakened.has(glyph.char) ? 'is-awake' : ''} />)}
+          {glyphs.map((glyph) => <li key={glyph.char} className={awakened.has(glyph.char) ? 'is-awake' : ''} />)}
         </ol>
       </div>
 
       <div className={`oracle-field-state ${fieldFrozen ? 'is-on' : ''}`} aria-live="polite">
-        <i /> {fieldFrozen ? '掌心感应 · 目标字已锁定' : '字海正在漂流'}
+        <i /> {fieldFrozen ? '掌心感应 · 字海已静止' : '字海正在呼吸'}
       </div>
 
       <button className="oracle-awaken" onClick={awakenRandom}>

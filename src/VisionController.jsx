@@ -96,12 +96,7 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
           minTrackingConfidence: 0.5,
         }),
         navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 512, max: 640 },
-            height: { ideal: 384, max: 480 },
-            frameRate: { ideal: 24, max: 30 },
-            facingMode: 'user',
-          },
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
           audio: false,
         }),
       ])
@@ -115,8 +110,6 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
 
       let lastVideoTime = -1
       let lastSignalUpdate = 0
-      let lastDetectionAt = 0
-      const detectionInterval = 1000 / 18
       const updateHold = (point, now, duration = 1100) => {
         const anchor = holdAnchorRef.current
         if (!anchor || Math.hypot(point.x - anchor.x, point.y - anchor.y) > 48) {
@@ -150,13 +143,8 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
         const video = videoRef.current
         if (!video || !handRef.current || !faceRef.current) return
         const now = performance.now()
-        if (
-          video.readyState >= 2 &&
-          video.currentTime !== lastVideoTime &&
-          now - lastDetectionAt >= detectionInterval
-        ) {
+        if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
           lastVideoTime = video.currentTime
-          lastDetectionAt = now
           const activeMode = modeRef.current
           const handResult = activeMode === 'hand' ? handRef.current.detectForVideo(video, now) : null
           const faceResult = activeMode === 'head' ? faceRef.current.detectForVideo(video, now) : null
@@ -186,9 +174,9 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
               cursorRef.current?.classList.add('is-triggered')
               window.setTimeout(() => cursorRef.current?.classList.remove('is-triggered'), 360)
             }
-            if (now - lastSignalUpdate > 450) {
+            if (now - lastSignalUpdate > 350) {
               setSignal(openPalm
-                ? '掌心展开 · 锁定目标字'
+                ? '掌心展开 · 字海静止'
                 : pinch < 0.07
                 ? '捏合 · 立即唤醒'
                 : holdProgress > 0.08
@@ -213,7 +201,7 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
               cursorRef.current?.classList.add('is-triggered')
               window.setTimeout(() => cursorRef.current?.classList.remove('is-triggered'), 360)
             }
-            if (now - lastSignalUpdate > 450) {
+            if (now - lastSignalUpdate > 350) {
               setSignal(mouthOpen ? '张口 · 立即唤醒' : `视线停留 · 识别 ${Math.round(holdProgress * 100)}%`)
               lastSignalUpdate = now
             }
@@ -277,7 +265,7 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
       {status === 'active' && (
         <>
           <div className="oracle-vision__modes">
-            <button className={controlMode === 'hand' ? 'is-active' : ''} onClick={() => setControlMode('hand')}><b>手</b><span>张掌锁定目标字<br />捏合快速确认</span></button>
+            <button className={controlMode === 'hand' ? 'is-active' : ''} onClick={() => setControlMode('hand')}><b>手</b><span>张掌静止字海<br />捏合快速确认</span></button>
             <button className={controlMode === 'head' ? 'is-active' : ''} onClick={() => setControlMode('head')}><b>首</b><span>视线停留<br />张口快速确认</span></button>
           </div>
           <p className="oracle-vision__status"><i /> {signal}</p>
