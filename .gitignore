@@ -1,0 +1,11 @@
+node_modules/
+.pnpm-store/
+dist/
+.tmp/
+.sites-runtime/
+*.log
+.tools/
+.video-originals/
+qa_*/
+td_mask_swap_work/
+*.docx
