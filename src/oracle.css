@@ -1,0 +1,745 @@
+:root {
+  --oracle-ink: #120f0d;
+  --oracle-ink-soft: #1c1713;
+  --oracle-bone: #eee8da;
+  --oracle-bone-dim: #a59d91;
+  --oracle-cinnabar: #c7472f;
+  --oracle-gold: #dda65f;
+}
+
+* { box-sizing: border-box; }
+
+body:has(.oracle-site) {
+  margin: 0;
+  overflow: hidden;
+  background: var(--oracle-ink);
+}
+
+.oracle-site {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  min-height: 660px;
+  overflow: hidden;
+  color: var(--oracle-bone);
+  background:
+    radial-gradient(circle at 50% 46%, rgba(112, 66, 36, .16), transparent 27%),
+    linear-gradient(135deg, #0e0c0b 0%, #17120f 48%, #100d0c 100%);
+  font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  user-select: none;
+}
+
+.oracle-site::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 12.5vw 12.5vh;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 80%, transparent);
+}
+
+.oracle-ink-field,
+.oracle-grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.oracle-ink-field { z-index: 2; }
+
+.oracle-grain {
+  z-index: 20;
+  opacity: .18;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+.oracle-header {
+  position: absolute;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 92px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 clamp(28px, 4.2vw, 78px);
+  border-bottom: 1px solid rgba(238, 232, 218, .12);
+}
+
+.oracle-brand,
+.oracle-back {
+  color: inherit;
+  text-decoration: none;
+}
+
+.oracle-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+}
+
+.oracle-brand span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: var(--oracle-cinnabar);
+  font: 700 14px/1 serif;
+}
+
+.oracle-brand strong {
+  font: 500 22px/1 "Noto Serif SC", "SimSun", serif;
+  letter-spacing: .18em;
+}
+
+.oracle-header__center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(238, 232, 218, .52);
+  font-size: 11px;
+  letter-spacing: .28em;
+}
+
+.oracle-header__center i { width: 34px; height: 1px; background: var(--oracle-cinnabar); }
+
+.oracle-back {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(238, 232, 218, .7);
+  font-size: 13px;
+  letter-spacing: .08em;
+}
+
+.oracle-back span { color: var(--oracle-gold); }
+
+.oracle-stage {
+  position: absolute;
+  z-index: 5;
+  inset: 92px 0 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.oracle-stage__title {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: min(66vw, 1080px);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgba(238, 232, 218, .035);
+  font-family: "Noto Serif SC", "SimSun", serif;
+  pointer-events: none;
+}
+
+.oracle-stage__title span,
+.oracle-stage__title strong { display: block; white-space: nowrap; }
+.oracle-stage__title span { font-size: clamp(28px, 3vw, 56px); font-weight: 400; letter-spacing: .28em; }
+.oracle-stage__title strong { margin-top: -1.2vw; font-size: clamp(110px, 14vw, 260px); font-weight: 500; letter-spacing: .08em; }
+
+.oracle-stage__halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(56vw, 820px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(221, 166, 95, .07);
+  border-radius: 50%;
+  box-shadow: inset 0 0 120px rgba(221, 166, 95, .025), 0 0 180px rgba(221, 166, 95, .025);
+  pointer-events: none;
+}
+
+.oracle-stage__halo::before,
+.oracle-stage__halo::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px dashed rgba(221, 166, 95, .06);
+  border-radius: 50%;
+}
+
+.oracle-stage__halo::after { inset: 33%; border-style: solid; }
+.oracle-stage__halo::before { animation: oracle-halo-turn 48s linear infinite; }
+.oracle-stage__halo::after { animation: oracle-halo-turn 31s linear infinite reverse; }
+.is-field-frozen .oracle-stage__halo { border-color: rgba(221,166,95,.24); box-shadow: inset 0 0 140px rgba(221,166,95,.055), 0 0 180px rgba(221,166,95,.08); }
+.is-field-frozen .oracle-stage__halo::before,
+.is-field-frozen .oracle-stage__halo::after { animation-play-state: paused; border-color: rgba(221,166,95,.18); }
+
+.oracle-floater {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(54px, 5.4vw, 94px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  color: var(--oracle-bone);
+  background: transparent;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: color .25s ease, filter .35s ease;
+}
+
+.oracle-floater .oracle-glyph { position: relative; z-index: 1; width: 100%; height: 100%; overflow: visible; }
+.oracle-glyph { fill: none; stroke: currentColor; stroke-width: 3.25; stroke-linecap: round; stroke-linejoin: round; }
+.oracle-glyph__echo { stroke: rgba(199, 71, 47, .24); stroke-width: 5.8; opacity: .34; }
+.oracle-glyph__engraving { stroke-width: 3.15; }
+.oracle-glyph__engraving path:nth-child(3n + 2) { stroke-width: 2.5; stroke-dasharray: 72 2 18 8; }
+.oracle-glyph__seal { fill: var(--oracle-cinnabar); stroke: none; opacity: .62; }
+
+.oracle-floater[data-near="true"],
+.oracle-floater:hover,
+.oracle-floater:focus-visible {
+  color: var(--oracle-gold);
+  filter: drop-shadow(0 0 9px rgba(221, 166, 95, .72)) drop-shadow(0 0 28px rgba(221, 166, 95, .25));
+  outline: none;
+}
+
+.oracle-floater[data-focused="true"] {
+  color: #f3c87e;
+  filter: drop-shadow(0 0 12px rgba(221, 166, 95, .92)) drop-shadow(0 0 48px rgba(199, 71, 47, .36));
+}
+
+.oracle-floater[data-focused="true"]::before {
+  content: '';
+  position: absolute;
+  inset: -14%;
+  border: 1px dashed rgba(221, 166, 95, .28);
+  border-radius: 50%;
+  animation: oracle-cursor-spin 9s linear infinite;
+}
+
+.oracle-modes {
+  position: absolute;
+  z-index: 30;
+  left: clamp(28px, 4.2vw, 78px);
+  top: 50%;
+  transform: translateY(-42%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.oracle-modes p {
+  margin: 0 0 16px;
+  color: rgba(238, 232, 218, .42);
+  font-size: 11px;
+  letter-spacing: .32em;
+}
+
+.oracle-modes button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 105px;
+  padding: 8px 0;
+  border: 0;
+  color: rgba(238, 232, 218, .42);
+  background: none;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: color .25s ease, transform .25s ease;
+}
+
+.oracle-modes button::before {
+  content: '';
+  width: 0;
+  height: 1px;
+  background: var(--oracle-cinnabar);
+  transition: width .25s ease;
+}
+
+.oracle-modes button span { font-size: 9px; letter-spacing: .15em; }
+.oracle-modes button:hover,
+.oracle-modes button.is-active { color: var(--oracle-bone); transform: translateX(4px); }
+.oracle-modes button.is-active::before { width: 24px; }
+
+.oracle-depth {
+  position: absolute;
+  z-index: 30;
+  right: clamp(28px, 4.2vw, 78px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(238, 232, 218, .4);
+  font-size: 9px;
+  letter-spacing: .2em;
+  writing-mode: vertical-rl;
+}
+
+.oracle-depth i {
+  position: relative;
+  width: 1px;
+  height: 96px;
+  background: rgba(238, 232, 218, .16);
+}
+.oracle-depth i::after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  bottom: 0;
+  width: 3px;
+  height: var(--depth);
+  background: var(--oracle-gold);
+  transition: height .2s ease;
+}
+.oracle-depth b { color: var(--oracle-gold); font-weight: 500; }
+
+.oracle-archive-meter {
+  position: absolute;
+  z-index: 32;
+  left: 50%;
+  bottom: 31px;
+  width: min(370px, 30vw);
+  padding: 11px 14px 10px;
+  color: rgba(238,232,218,.48);
+  background: rgba(13,10,8,.58);
+  border: 1px solid rgba(238,232,218,.09);
+  backdrop-filter: blur(14px);
+  transform: translateX(-50%);
+  transition: opacity .35s, border-color .35s;
+}
+
+.oracle-archive-meter > div { display: flex; align-items: baseline; justify-content: space-between; }
+.oracle-archive-meter span { font-size: 8px; letter-spacing: .25em; }
+.oracle-archive-meter b { color: var(--oracle-gold); font: 500 16px/1 sans-serif; letter-spacing: .08em; }
+.oracle-archive-meter b i { color: rgba(238,232,218,.25); font: normal 8px/1 sans-serif; }
+.oracle-archive-meter ol { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin: 8px 0 0; padding: 0; list-style: none; }
+.oracle-archive-meter li { height: 2px; background: rgba(238,232,218,.12); transition: background .45s, box-shadow .45s; }
+.oracle-archive-meter li.is-awake { background: var(--oracle-gold); box-shadow: 0 0 8px rgba(221,166,95,.65); }
+.has-selection .oracle-archive-meter { opacity: .16; }
+
+.oracle-field-state {
+  position: absolute;
+  z-index: 31;
+  top: 111px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  color: rgba(238,232,218,.3);
+  background: rgba(12,9,7,.48);
+  border: 1px solid rgba(238,232,218,.07);
+  font-size: 8px;
+  letter-spacing: .18em;
+  transform: translateX(-50%);
+  transition: color .3s, border-color .3s, background .3s;
+  pointer-events: none;
+}
+
+.oracle-field-state i { width: 5px; height: 5px; border-radius: 50%; background: rgba(238,232,218,.2); }
+.oracle-field-state.is-on { color: var(--oracle-gold); background: rgba(199,71,47,.1); border-color: rgba(221,166,95,.28); }
+.oracle-field-state.is-on i { background: var(--oracle-cinnabar); box-shadow: 0 0 10px rgba(199,71,47,.85); }
+
+.oracle-awaken {
+  position: absolute;
+  z-index: 30;
+  right: clamp(70px, 7.8vw, 142px);
+  bottom: 42px;
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 0 0 9px;
+  border: 0;
+  border-bottom: 1px solid rgba(238, 232, 218, .3);
+  color: var(--oracle-bone);
+  background: none;
+  cursor: pointer;
+}
+.oracle-awaken span { font: 500 18px/1 "Noto Serif SC", "SimSun", serif; letter-spacing: .12em; }
+.oracle-awaken i { color: var(--oracle-cinnabar); font: normal 9px/1 sans-serif; letter-spacing: .22em; }
+.oracle-awaken:hover { border-color: var(--oracle-cinnabar); }
+
+.oracle-guide-button {
+  position: absolute;
+  z-index: 30;
+  left: clamp(28px, 4.2vw, 78px);
+  bottom: 40px;
+  padding: 0;
+  border: 0;
+  color: rgba(238, 232, 218, .48);
+  background: none;
+  font-size: 11px;
+  letter-spacing: .15em;
+  cursor: pointer;
+}
+.oracle-guide-button span { display: inline-grid; place-items: center; margin-left: 8px; width: 20px; height: 20px; border: 1px solid rgba(238,232,218,.22); border-radius: 50%; }
+
+.oracle-vision {
+  position: absolute;
+  z-index: 34;
+  top: 116px;
+  right: clamp(62px, 7.5vw, 136px);
+  width: 258px;
+  padding: 12px;
+  color: var(--oracle-bone);
+  background: rgba(15, 12, 10, .72);
+  border: 1px solid rgba(238, 232, 218, .13);
+  backdrop-filter: blur(16px);
+  transition: opacity .35s, transform .35s, border-color .35s;
+}
+
+.oracle-vision:hover { border-color: rgba(221, 166, 95, .35); }
+
+.oracle-vision__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: rgba(238, 232, 218, .55);
+  font-size: 9px;
+  letter-spacing: .2em;
+}
+
+.oracle-vision__topline span { display: flex; align-items: center; gap: 7px; }
+.oracle-vision__topline span > i,
+.oracle-vision__status > i {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(238, 232, 218, .28);
+}
+
+.oracle-vision--active .oracle-vision__topline span > i,
+.oracle-vision--active .oracle-vision__status > i {
+  background: #d7b06b;
+  box-shadow: 0 0 9px rgba(221, 166, 95, .9);
+  animation: oracle-sensor-pulse 1.6s ease-in-out infinite;
+}
+
+.oracle-vision__topline button {
+  padding: 0;
+  border: 0;
+  color: rgba(238, 232, 218, .4);
+  background: none;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.oracle-vision__screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 49.7%, rgba(221,166,95,.09) 50%, transparent 50.3%),
+    linear-gradient(transparent 49.7%, rgba(221,166,95,.09) 50%, transparent 50.3%),
+    #090807;
+}
+
+.oracle-vision__screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: grayscale(1) sepia(.24) contrast(1.15) brightness(.72);
+}
+
+.oracle-vision__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(238, 232, 218, .26);
+  font-size: 8px;
+  letter-spacing: .24em;
+}
+
+.oracle-vision__placeholder svg {
+  width: 76px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+
+.oracle-sensor-mark { overflow: visible; filter: drop-shadow(0 0 15px rgba(221,166,95,.18)); }
+.oracle-sensor-mark__orbit { stroke-dasharray: 3 7; transform-origin: 60px 60px; animation: oracle-cursor-spin 18s linear infinite; }
+.oracle-sensor-mark__orbit--inner { stroke-dasharray: 21 8 3 8; animation-direction: reverse; animation-duration: 11s; }
+.oracle-sensor-mark__bracket { stroke: rgba(221,166,95,.62); stroke-width: 1.6; }
+.oracle-sensor-mark__eye { stroke: rgba(238,232,218,.52); stroke-width: 1.7; }
+.oracle-sensor-mark__iris { fill: rgba(199,71,47,.2); stroke: rgba(221,166,95,.8); stroke-width: 1.6; }
+.oracle-sensor-mark__trace { stroke: rgba(199,71,47,.48); stroke-dasharray: 2 3; }
+
+.oracle-vision__scan {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: -20%;
+  width: 100%;
+  height: 24%;
+  opacity: 0;
+  background: linear-gradient(to bottom, transparent, rgba(221,166,95,.14), transparent);
+  pointer-events: none;
+}
+
+.oracle-vision--loading .oracle-vision__scan,
+.oracle-vision--active .oracle-vision__scan {
+  opacity: 1;
+  animation: oracle-camera-scan 2.8s linear infinite;
+}
+
+.oracle-vision__reticle { position: absolute; z-index: 3; inset: 10px; pointer-events: none; }
+.oracle-vision__reticle i { position: absolute; width: 18px; height: 18px; border-color: rgba(221,166,95,.62); border-style: solid; }
+.oracle-vision__reticle i:nth-child(1) { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.oracle-vision__reticle i:nth-child(2) { top: 0; right: 0; border-width: 1px 1px 0 0; }
+.oracle-vision__reticle i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+.oracle-vision__reticle i:nth-child(4) { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
+
+.oracle-vision > p {
+  margin: 10px 0 8px;
+  color: rgba(238, 232, 218, .36);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.oracle-vision__start {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0 3px;
+  border: 0;
+  border-top: 1px solid rgba(238,232,218,.13);
+  color: rgba(238,232,218,.78);
+  background: none;
+  font-size: 11px;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.oracle-vision__start span { color: var(--oracle-cinnabar); }
+.oracle-vision__error { color: #cf725f !important; }
+.oracle-vision__status { display: flex; align-items: center; gap: 7px; letter-spacing: .08em; }
+
+.oracle-vision__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin-top: 8px;
+  background: rgba(238,232,218,.1);
+}
+
+.oracle-vision__modes button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 0;
+  color: rgba(238,232,218,.38);
+  background: #11100e;
+  text-align: left;
+  cursor: pointer;
+}
+
+.oracle-vision__modes button.is-active { color: var(--oracle-bone); background: rgba(199,71,47,.14); }
+.oracle-vision__modes b { color: var(--oracle-cinnabar); font: 500 22px/1 "Noto Serif SC", "SimSun", serif; }
+.oracle-vision__modes span { font-size: 8px; line-height: 1.55; letter-spacing: .08em; }
+
+.oracle-vision-cursor {
+  --hold: 0;
+  position: fixed;
+  z-index: 60;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 68px;
+  height: 68px;
+  border: 1px solid rgba(221,166,95,.32);
+  border-radius: 50%;
+  pointer-events: none;
+  transition: width .2s, height .2s, border-color .2s;
+}
+
+.oracle-vision--active .oracle-vision-cursor { display: block; }
+.oracle-vision-cursor::before,
+.oracle-vision-cursor::after {
+  content: '';
+  position: absolute;
+}
+.oracle-vision-cursor::before {
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(var(--oracle-gold) calc(var(--hold) * 1turn), rgba(221,166,95,.08) 0);
+  -webkit-mask: radial-gradient(circle, transparent 65%, #000 67%);
+  mask: radial-gradient(circle, transparent 65%, #000 67%);
+  filter: drop-shadow(0 0 6px rgba(221,166,95,.5));
+}
+.oracle-vision-cursor::after { inset: 50% auto auto 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--oracle-gold); transform: translate(-50%, -50%); box-shadow: 0 0 12px rgba(221,166,95,.9); }
+.oracle-vision-cursor > i { position: absolute; inset: 8px; border: 1px dashed rgba(221,166,95,.32); border-radius: 50%; animation: oracle-cursor-spin 7s linear infinite; }
+.oracle-vision-cursor > span { position: absolute; right: -5px; bottom: -5px; width: 7px; height: 7px; border-radius: 50%; background: var(--oracle-cinnabar); }
+.oracle-vision-cursor[data-source="head"] { border-radius: 38% 62% 52% 48%; }
+.oracle-vision-cursor.is-triggered { width: 116px; height: 116px; border-color: var(--oracle-gold); box-shadow: 0 0 45px rgba(221,166,95,.28); }
+
+.oracle-intro {
+  position: absolute;
+  z-index: 70;
+  top: 92px;
+  left: 0;
+  width: min(590px, 44vw);
+  height: calc(100% - 92px);
+  padding: clamp(46px, 7vh, 86px) clamp(42px, 5vw, 88px);
+  background: #120f0d;
+  border-right: 1px solid rgba(238, 232, 218, .13);
+  box-shadow: 28px 0 90px rgba(0, 0, 0, .42);
+  backdrop-filter: blur(28px);
+  animation: oracle-panel-in .65s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.oracle-intro__close,
+.oracle-detail__close {
+  position: absolute;
+  top: 30px;
+  right: 32px;
+  border: 0;
+  color: rgba(238,232,218,.65);
+  background: none;
+  cursor: pointer;
+}
+.oracle-intro__close { font-size: 24px; }
+.oracle-intro__kicker,
+.oracle-detail__eyebrow { margin: 0; color: var(--oracle-cinnabar); font-size: 11px; letter-spacing: .25em; }
+.oracle-intro h1 { margin: 30px 0 28px; font: 500 clamp(44px, 4.3vw, 72px)/1.16 "Noto Serif SC", "SimSun", serif; letter-spacing: .03em; }
+.oracle-intro__lead { max-width: 390px; margin: 0; color: rgba(238,232,218,.62); font-size: 15px; line-height: 1.85; }
+.oracle-intro__steps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; margin: 46px 0; padding-top: 22px; border-top: 1px solid rgba(238,232,218,.14); color: rgba(238,232,218,.7); font-size: 12px; letter-spacing: .08em; }
+.oracle-intro__steps span { display: flex; gap: 10px; }
+.oracle-intro__steps b { color: var(--oracle-cinnabar); font-size: 10px; }
+.oracle-enter { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 390px; height: 62px; padding: 0 22px; border: 1px solid rgba(238,232,218,.32); color: var(--oracle-bone); background: rgba(199,71,47,.08); font-size: 15px; letter-spacing: .18em; cursor: pointer; transition: background .25s, border-color .25s; }
+.oracle-enter:hover { border-color: var(--oracle-cinnabar); background: var(--oracle-cinnabar); }
+.oracle-enter i { font-style: normal; font-size: 22px; }
+.oracle-intro small { display: block; margin-top: 15px; color: rgba(238,232,218,.32); font-size: 10px; letter-spacing: .12em; }
+
+.oracle-detail {
+  position: absolute;
+  z-index: 80;
+  top: 92px;
+  right: 0;
+  width: min(620px, 46vw);
+  height: calc(100% - 92px);
+  padding: clamp(38px, 5vh, 58px) clamp(44px, 5vw, 78px) 36px;
+  color: var(--oracle-bone);
+  background: rgba(20, 16, 13, .94);
+  border-left: 1px solid rgba(238,232,218,.14);
+  backdrop-filter: blur(25px);
+  animation: oracle-detail-in .65s cubic-bezier(.2,.8,.2,1) both;
+  overflow-y: auto;
+}
+
+.oracle-detail__close { display: flex; align-items: center; gap: 10px; font-size: 10px; letter-spacing: .15em; }
+.oracle-detail__close span { font-size: 23px; font-weight: 200; }
+.oracle-detail__index { color: rgba(238,232,218,.34); font-size: 9px; letter-spacing: .25em; }
+
+.oracle-evolution { position: relative; height: clamp(190px, 31vh, 290px); margin-top: 18px; }
+.oracle-evolution__ancient,
+.oracle-evolution__modern { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.oracle-evolution__ancient { width: min(230px, 40%); aspect-ratio: 1; color: var(--oracle-gold); filter: drop-shadow(0 0 16px rgba(221,166,95,.4)); transition: opacity .75s, transform .8s, filter .8s; }
+.oracle-evolution__ancient::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -18%;
+  background-image:
+    radial-gradient(circle at 50% 45%, rgba(15,11,8,.04) 0 34%, rgba(8,6,5,.82) 96%),
+    var(--oracle-texture);
+  background-size: 100% 100%, 400% 400%;
+  background-position: center, var(--texture-x) var(--texture-y);
+  background-repeat: no-repeat;
+  clip-path: polygon(7% 5%, 84% 2%, 98% 19%, 94% 83%, 78% 98%, 15% 92%, 2% 72%, 5% 21%);
+  opacity: .9;
+  transform: rotate(var(--texture-angle));
+  filter: saturate(.7) contrast(1.18) brightness(.72);
+  box-shadow: inset 0 0 40px rgba(0,0,0,.58), 0 24px 75px rgba(0,0,0,.38);
+}
+.oracle-evolution__ancient::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: -7%;
+  border: 1px solid rgba(221,166,95,.16);
+  clip-path: polygon(7% 5%, 84% 2%, 98% 19%, 94% 83%, 78% 98%, 15% 92%, 2% 72%, 5% 21%);
+  pointer-events: none;
+}
+.oracle-evolution__ancient .oracle-glyph { width: 100%; height: 100%; stroke-dasharray: 260; stroke-dashoffset: 260; animation: oracle-draw 2.3s ease forwards; }
+.oracle-evolution__ancient i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--oracle-gold); box-shadow: 0 0 9px currentColor; animation: oracle-spark 1.5s ease-out infinite; }
+.oracle-evolution__ancient i:nth-of-type(1) { top: 8%; left: 70%; }
+.oracle-evolution__ancient i:nth-of-type(2) { top: 63%; left: 5%; animation-delay: .45s; }
+.oracle-evolution__ancient i:nth-of-type(3) { top: 82%; right: 8%; animation-delay: .8s; }
+.oracle-evolution__modern { opacity: 0; color: var(--oracle-bone); font: 500 clamp(110px, 11vw, 190px)/1 "Noto Serif SC", "SimSun", serif; text-shadow: 0 0 38px rgba(238,232,218,.12); transform: translate(-50%, -50%) scale(.68); transition: opacity .9s, transform 1s cubic-bezier(.2,.8,.2,1); }
+.oracle-evolution__trace { position: absolute; left: 50%; top: 50%; width: 1px; height: 1px; box-shadow: 0 0 100px 48px rgba(221,166,95,.1); opacity: 0; transition: opacity .8s; }
+.oracle-evolution--1 .oracle-evolution__ancient { filter: blur(1.5px) drop-shadow(0 0 26px rgba(221,166,95,.7)); transform: translate(-50%, -50%) scale(1.12); }
+.oracle-evolution--1 .oracle-evolution__trace { opacity: 1; }
+.oracle-evolution--2 .oracle-evolution__ancient { opacity: 0; transform: translate(-50%, -50%) scale(1.45); filter: blur(8px); }
+.oracle-evolution--2 .oracle-evolution__modern { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+.oracle-detail__timeline { display: grid; grid-template-columns: auto 1fr auto 1fr auto; align-items: center; gap: 10px; color: rgba(238,232,218,.25); font-size: 9px; letter-spacing: .12em; }
+.oracle-detail__timeline span { transition: color .4s; }
+.oracle-detail__timeline span.is-on { color: var(--oracle-gold); }
+.oracle-detail__timeline b { height: 1px; background: rgba(238,232,218,.14); }
+.oracle-detail__copy { margin-top: clamp(28px, 4vh, 42px); }
+.oracle-detail__copy h2 { display: flex; align-items: baseline; gap: 15px; margin: 12px 0 15px; font: 500 clamp(30px, 3vw, 46px)/1.2 "Noto Serif SC", "SimSun", serif; }
+.oracle-detail__copy h2 small { color: rgba(238,232,218,.4); font: 400 10px/1 sans-serif; letter-spacing: .18em; }
+.oracle-detail__copy > p:last-of-type { margin: 0; color: rgba(238,232,218,.58); font-size: 14px; line-height: 1.8; }
+.oracle-detail__copy blockquote { margin: 18px 0 0; padding-left: 15px; border-left: 2px solid var(--oracle-cinnabar); color: rgba(238,232,218,.78); font: 400 15px/1.7 "Noto Serif SC", "SimSun", serif; letter-spacing: .08em; }
+.oracle-detail__next { display: flex; justify-content: space-between; width: 100%; margin-top: 28px; padding: 15px 0 9px; border: 0; border-bottom: 1px solid rgba(238,232,218,.24); color: var(--oracle-bone); background: none; font-size: 12px; letter-spacing: .12em; cursor: pointer; }
+.oracle-detail__next span { color: var(--oracle-cinnabar); }
+
+.has-selection .oracle-stage { filter: saturate(.6) brightness(.55); transition: filter .5s; }
+
+@keyframes oracle-draw { to { stroke-dashoffset: 0; } }
+@keyframes oracle-spark { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 35% { opacity: 1; } 100% { opacity: 0; transform: translate(16px, -22px) scale(1.4); } }
+@keyframes oracle-panel-in { from { opacity: 0; transform: translateX(-24px); } }
+@keyframes oracle-detail-in { from { opacity: 0; transform: translateX(35px); } }
+@keyframes oracle-camera-scan { from { transform: translateY(0); } to { transform: translateY(500%); } }
+@keyframes oracle-sensor-pulse { 50% { opacity: .35; transform: scale(.7); } }
+@keyframes oracle-cursor-spin { to { transform: rotate(360deg); } }
+@keyframes oracle-halo-turn { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .oracle-site { min-height: 560px; }
+  .oracle-header { height: 76px; padding: 0 20px; grid-template-columns: 1fr auto; }
+  .oracle-header__center { display: none; }
+  .oracle-stage { top: 76px; }
+  .oracle-intro,
+  .oracle-detail { top: 76px; width: 100%; max-width: none; height: calc(100% - 76px); padding: 42px 28px 28px; }
+  .oracle-intro h1 { font-size: clamp(42px, 12vw, 62px); }
+  .oracle-modes { left: 18px; top: auto; bottom: 72px; transform: none; flex-direction: row; }
+  .oracle-modes p { display: none; }
+  .oracle-modes button { min-width: auto; padding: 8px; }
+  .oracle-modes button span,
+  .oracle-modes button::before { display: none; }
+  .oracle-depth { right: 18px; }
+  .oracle-archive-meter { width: 42vw; bottom: 18px; }
+  .oracle-field-state { display: none; }
+  .oracle-awaken { right: 20px; bottom: 26px; }
+  .oracle-guide-button { left: 20px; bottom: 28px; }
+  .oracle-stage__title { width: 92vw; }
+  .oracle-stage__title strong { font-size: 23vw; }
+  .oracle-vision { top: 90px; right: 18px; width: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oracle-evolution__ancient .oracle-glyph { animation-duration: .01ms; }
+  .oracle-evolution__ancient i { display: none; }
+}
