@@ -162,14 +162,58 @@ const createArchivePaths = (seed) => {
     const raw = Math.sin(seed * 12.9898 + step * 78.233) * 43758.5453
     return Math.round((min + (raw - Math.floor(raw)) * (max - min)) * 10) / 10
   }
-  const paths = [
-    `M${value(1, 38, 55)} ${value(2, 8, 18)} Q${value(3, 42, 62)} ${value(4, 34, 46)} ${value(5, 40, 58)} ${value(6, 84, 92)}`,
-    `M${value(7, 12, 25)} ${value(8, 30, 45)} Q${value(9, 34, 44)} ${value(10, 22, 38)} ${value(11, 48, 58)} ${value(12, 42, 54)} Q${value(13, 68, 80)} ${value(14, 35, 48)} ${value(15, 82, 91)} ${value(16, 22, 38)}`,
-    `M${value(17, 18, 32)} ${value(18, 66, 80)} Q${value(19, 40, 50)} ${value(20, 54, 70)} ${value(21, 48, 58)} ${value(22, 44, 58)} Q${value(23, 64, 76)} ${value(24, 58, 74)} ${value(25, 78, 88)} ${value(26, 72, 87)}`,
-  ]
-  if (seed % 2 === 0) paths.push(`M${value(27, 23, 35)} ${value(28, 18, 29)} Q${value(29, 50, 59)} ${value(30, 7, 18)} ${value(31, 73, 84)} ${value(32, 23, 36)}`)
-  if (seed % 3 === 0) paths.push(`M${value(33, 21, 32)} ${value(34, 38, 52)} Q${value(35, 48, 58)} ${value(36, 29, 42)} ${value(37, 76, 86)} ${value(38, 48, 63)}`)
-  if (seed % 5 === 0) paths.push(`M${value(39, 30, 41)} ${value(40, 24, 34)} L${value(41, 68, 79)} ${value(42, 27, 39)} L${value(43, 72, 83)} ${value(44, 72, 84)} Q${value(45, 49, 59)} ${value(46, 91, 96)} ${value(47, 24, 35)} ${value(48, 70, 84)} Z`)
+  const variant = seed % 8
+  let paths
+  if (variant === 0) {
+    paths = [
+      `M${value(1, 16, 23)} ${value(2, 19, 27)} Q50 ${value(3, 10, 17)} ${value(4, 77, 84)} ${value(5, 20, 30)} L${value(6, 79, 87)} ${value(7, 77, 86)} Q50 ${value(8, 91, 96)} ${value(9, 14, 22)} ${value(10, 76, 85)} Z`,
+      `M${value(11, 19, 28)} 48 Q50 ${value(12, 42, 48)} ${value(13, 73, 82)} 51`,
+      `M49 ${value(14, 17, 25)} Q${value(15, 44, 56)} 50 51 ${value(16, 76, 87)}`,
+    ]
+  } else if (variant === 1) {
+    paths = [
+      `M${value(1, 14, 23)} 52 Q${value(2, 30, 39)} ${value(3, 17, 28)} ${value(4, 61, 72)} ${value(5, 27, 38)} Q${value(6, 86, 92)} 45 ${value(7, 74, 84)} 66 Q${value(8, 50, 61)} ${value(9, 88, 94)} ${value(10, 23, 34)} 72 Z`,
+      `M${value(11, 25, 36)} 68 L${value(12, 18, 29)} ${value(13, 87, 95)} M${value(14, 61, 72)} 68 L${value(15, 73, 84)} ${value(16, 87, 95)}`,
+      `M${value(17, 68, 78)} 31 L${value(18, 84, 93)} ${value(19, 20, 34)}`,
+    ]
+  } else if (variant === 2) {
+    paths = [
+      `M50 ${value(1, 8, 16)} L50 ${value(2, 84, 93)} M${value(3, 9, 18)} 50 L${value(4, 83, 92)} 50`,
+      `M${value(5, 20, 29)} ${value(6, 19, 29)} L${value(7, 76, 85)} ${value(8, 76, 87)} M${value(9, 78, 88)} ${value(10, 18, 29)} L${value(11, 18, 29)} ${value(12, 78, 88)}`,
+      `M50 ${value(13, 25, 34)} Q${value(14, 66, 77)} 50 50 ${value(15, 69, 79)} Q${value(16, 27, 37)} 50 50 ${value(13, 25, 34)} Z`,
+    ]
+  } else if (variant === 3) {
+    paths = [
+      `M${value(1, 21, 30)} 34 Q50 ${value(2, 21, 29)} ${value(3, 70, 80)} 34 L${value(4, 72, 82)} 70 Q50 ${value(5, 85, 94)} ${value(6, 18, 28)} 70 Z`,
+      `M${value(7, 20, 29)} 43 Q50 ${value(8, 53, 61)} ${value(9, 72, 82)} 43`,
+      `M${value(10, 23, 32)} 35 Q${value(11, 9, 17)} ${value(12, 29, 40)} ${value(13, 18, 26)} ${value(14, 54, 67)} M${value(15, 76, 84)} 35 Q${value(16, 91, 97)} ${value(17, 31, 42)} ${value(18, 82, 91)} ${value(19, 55, 68)}`,
+    ]
+  } else if (variant === 4) {
+    paths = [
+      `M${value(1, 8, 17)} ${value(2, 76, 87)} L${value(3, 26, 38)} ${value(4, 35, 48)} L${value(5, 46, 55)} ${value(6, 68, 79)} L${value(7, 64, 74)} ${value(8, 18, 31)} L${value(9, 88, 95)} ${value(10, 76, 87)}`,
+      `M${value(11, 18, 29)} ${value(12, 86, 94)} Q50 ${value(13, 78, 87)} ${value(14, 79, 90)} ${value(15, 88, 95)}`,
+      `M${value(16, 48, 57)} ${value(17, 20, 34)} L${value(18, 47, 56)} ${value(19, 88, 95)}`,
+    ]
+  } else if (variant === 5) {
+    paths = [
+      `M50 ${value(1, 7, 15)} Q${value(2, 44, 56)} 48 50 ${value(3, 87, 95)}`,
+      `M50 ${value(4, 26, 36)} Q${value(5, 29, 40)} ${value(6, 16, 28)} ${value(7, 13, 24)} ${value(8, 34, 46)} M50 ${value(9, 29, 41)} Q${value(10, 69, 80)} ${value(11, 16, 29)} ${value(12, 86, 94)} ${value(13, 37, 49)}`,
+      `M50 ${value(14, 58, 68)} Q${value(15, 30, 41)} ${value(16, 71, 81)} ${value(17, 19, 31)} ${value(18, 91, 97)} M50 ${value(19, 60, 71)} Q${value(20, 67, 79)} ${value(21, 73, 83)} ${value(22, 82, 92)} ${value(23, 91, 97)}`,
+    ]
+  } else if (variant === 6) {
+    paths = [
+      `M${value(1, 42, 49)} ${value(2, 10, 17)} Q50 ${value(3, 3, 9)} ${value(4, 52, 59)} ${value(5, 11, 18)} Q50 ${value(6, 22, 29)} ${value(1, 42, 49)} ${value(2, 10, 17)} Z`,
+      `M50 ${value(7, 23, 31)} L50 ${value(8, 64, 73)} M50 ${value(9, 37, 46)} L${value(10, 15, 26)} ${value(11, 55, 67)} M50 ${value(9, 37, 46)} L${value(12, 75, 86)} ${value(13, 52, 65)}`,
+      `M50 ${value(14, 65, 74)} L${value(15, 29, 40)} ${value(16, 91, 97)} M50 ${value(14, 65, 74)} L${value(17, 63, 74)} ${value(18, 91, 97)}`,
+    ]
+  } else {
+    paths = [
+      `M${value(1, 23, 34)} ${value(2, 7, 14)} Q${value(3, 72, 84)} ${value(4, 22, 34)} ${value(5, 29, 41)} ${value(6, 43, 55)} Q${value(7, 13, 25)} ${value(8, 65, 77)} ${value(9, 45, 57)} ${value(10, 91, 97)}`,
+      `M${value(11, 51, 63)} ${value(12, 12, 24)} Q${value(13, 20, 32)} ${value(14, 35, 47)} ${value(15, 68, 82)} ${value(16, 61, 74)} Q${value(17, 80, 91)} ${value(18, 81, 92)} ${value(19, 56, 69)} ${value(20, 91, 97)}`,
+      `M${value(21, 18, 29)} ${value(22, 53, 66)} L${value(23, 80, 92)} ${value(24, 45, 59)}`,
+    ]
+  }
+  paths.push(`M${value(50, 12, 28)} ${value(51, 27, 73)} Q${value(52, 42, 58)} ${value(53, 14, 86)} ${value(54, 72, 89)} ${value(55, 24, 78)}`)
   return paths
 }
 
@@ -379,17 +423,26 @@ export default function OracleApp() {
   useEffect(() => {
     const width = window.innerWidth
     const height = window.innerHeight
-    nodesRef.current = instances.map((item, i) => ({
+    nodesRef.current = instances.map((item, i) => {
+      const angle = ((i * 137.508 + item.seed * 3.7) % 360) * (Math.PI / 180)
+      const speed = 0.34 + (i % 8) * 0.045
+      const baseVx = Math.cos(angle) * speed
+      const baseVy = Math.sin(angle) * speed * 0.76
+      return {
       x: 90 + ((item.seed * 173 + i * 59) % Math.max(300, width - 180)),
       y: 90 + ((item.seed * 97 + i * 83) % Math.max(260, height - 180)),
-      vx: ((i % 5) - 2) * 0.055,
-      vy: (((i * 3) % 7) - 3) * 0.04,
+      vx: baseVx,
+      vy: baseVy,
+      baseVx,
+      baseVy,
+      phase: item.seed * 0.37 + i,
       radius: 28 + (i % 4) * 7,
       opacity: -1,
       near: false,
       focused: false,
       zIndex: -1,
-    }))
+      }
+    })
 
     let frame
     let lastTick = 0
@@ -426,11 +479,8 @@ export default function OracleApp() {
           // 手势停在哪里，最近的字就在哪里稳定下来。
           node.x += (pointer.x - node.x) * 0.24
           node.y += (pointer.y - node.y) * 0.24
-          node.vx = 0
-          node.vy = 0
-        } else if (fieldFrozenRef.current) {
-          node.vx *= 0.72
-          node.vy *= 0.72
+          node.vx *= 0.82
+          node.vy *= 0.82
         } else if (currentMode === 'gather') {
           const angle = (i / nodesRef.current.length) * Math.PI * 2 + time * 0.00004
           const ring = Math.min(w, h) * (0.18 + (i % 3) * 0.075)
@@ -443,13 +493,13 @@ export default function OracleApp() {
           node.x += (w * 0.5 + Math.cos(angle) * rx - node.x) * 0.012
           node.y += (h * 0.5 + Math.sin(angle) * ry - node.y) * 0.012
         } else {
-          node.vx += Math.sin(time * 0.00023 + i * 1.7) * 0.0009
-          node.vy += Math.cos(time * 0.00019 + i * 1.3) * 0.0008
+          node.vx += (node.baseVx - node.vx) * 0.012 + Math.sin(time * 0.00065 + node.phase) * 0.0042
+          node.vy += (node.baseVy - node.vy) * 0.012 + Math.cos(time * 0.00058 + node.phase) * 0.0036
         }
 
-        if (!isFocused && !fieldFrozenRef.current) {
-          node.vx *= 0.996
-          node.vy *= 0.996
+        if (!isFocused) {
+          node.vx *= 0.998
+          node.vy *= 0.998
           node.x += node.vx * depthRef.current
           node.y += node.vy * depthRef.current
         }
@@ -677,7 +727,7 @@ export default function OracleApp() {
       </div>
 
       <div className={`oracle-field-state ${fieldFrozen ? 'is-on' : ''}`} aria-live="polite">
-        <i /> {fieldFrozen ? '掌心感应 · 字海已静止' : '字海正在呼吸'}
+        <i /> {fieldFrozen ? '掌心感应 · 目标字已锁定' : '字海正在漂流'}
       </div>
 
       <button className="oracle-awaken" onClick={awakenRandom}>

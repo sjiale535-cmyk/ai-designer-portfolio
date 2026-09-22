@@ -188,7 +188,7 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
             }
             if (now - lastSignalUpdate > 450) {
               setSignal(openPalm
-                ? '掌心展开 · 字海静止'
+                ? '掌心展开 · 锁定目标字'
                 : pinch < 0.07
                 ? '捏合 · 立即唤醒'
                 : holdProgress > 0.08
@@ -277,7 +277,7 @@ export default function VisionController({ pointerRef, activePointerRef, onAwake
       {status === 'active' && (
         <>
           <div className="oracle-vision__modes">
-            <button className={controlMode === 'hand' ? 'is-active' : ''} onClick={() => setControlMode('hand')}><b>手</b><span>张掌静止字海<br />捏合快速确认</span></button>
+            <button className={controlMode === 'hand' ? 'is-active' : ''} onClick={() => setControlMode('hand')}><b>手</b><span>张掌锁定目标字<br />捏合快速确认</span></button>
             <button className={controlMode === 'head' ? 'is-active' : ''} onClick={() => setControlMode('head')}><b>首</b><span>视线停留<br />张口快速确认</span></button>
           </div>
           <p className="oracle-vision__status"><i /> {signal}</p>
