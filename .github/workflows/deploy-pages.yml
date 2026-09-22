@@ -28,6 +28,8 @@ jobs:
           cache: pnpm
       - uses: actions/configure-pages@v5
         id: pages
+        with:
+          enablement: true
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
         env:
