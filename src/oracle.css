@@ -636,14 +636,16 @@ body:has(.oracle-site) {
 .oracle-detail {
   position: absolute;
   z-index: 80;
-  top: 92px;
-  right: 0;
-  width: min(620px, 46vw);
-  height: calc(100% - 92px);
-  padding: clamp(38px, 5vh, 58px) clamp(44px, 5vw, 78px) 36px;
+  top: 428px;
+  right: clamp(62px, 7.5vw, 136px);
+  width: min(560px, 44vw);
+  height: calc(100% - 452px);
+  padding: clamp(30px, 4vh, 44px) clamp(34px, 4vw, 58px) 30px;
   color: var(--oracle-bone);
   background: rgba(20, 16, 13, .94);
-  border-left: 1px solid rgba(238,232,218,.14);
+  border: 1px solid rgba(238,232,218,.14);
+  border-top-color: rgba(221,166,95,.38);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .42);
   backdrop-filter: blur(25px);
   animation: oracle-detail-in .65s cubic-bezier(.2,.8,.2,1) both;
   overflow-y: auto;
@@ -653,7 +655,7 @@ body:has(.oracle-site) {
 .oracle-detail__close span { font-size: 23px; font-weight: 200; }
 .oracle-detail__index { color: rgba(238,232,218,.34); font-size: 9px; letter-spacing: .25em; }
 
-.oracle-evolution { position: relative; height: clamp(190px, 31vh, 290px); margin-top: 18px; }
+.oracle-evolution { position: relative; height: clamp(160px, 22vh, 220px); margin-top: 18px; }
 .oracle-evolution__ancient,
 .oracle-evolution__modern { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .oracle-evolution__ancient { width: min(230px, 40%); aspect-ratio: 1; color: var(--oracle-gold); filter: drop-shadow(0 0 16px rgba(221,166,95,.4)); transition: opacity .75s, transform .8s, filter .8s; }
@@ -723,8 +725,8 @@ body:has(.oracle-site) {
   .oracle-header { height: 76px; padding: 0 20px; grid-template-columns: 1fr auto; }
   .oracle-header__center { display: none; }
   .oracle-stage { top: 76px; }
-  .oracle-intro,
-  .oracle-detail { top: 76px; width: 100%; max-width: none; height: calc(100% - 76px); padding: 42px 28px 28px; }
+  .oracle-intro { top: 76px; width: 100%; max-width: none; height: calc(100% - 76px); padding: 42px 28px 28px; }
+  .oracle-detail { top: 372px; right: 18px; width: calc(100% - 36px); max-width: none; height: calc(100% - 390px); padding: 38px 28px 28px; }
   .oracle-intro h1 { font-size: clamp(42px, 12vw, 62px); }
   .oracle-modes { left: 18px; top: auto; bottom: 72px; transform: none; flex-direction: row; }
   .oracle-modes p { display: none; }
