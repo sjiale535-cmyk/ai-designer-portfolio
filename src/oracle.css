@@ -453,7 +453,9 @@ body:has(.oracle-site) {
   height: 100%;
   object-fit: cover;
   transform: scaleX(-1);
-  filter: grayscale(1) sepia(.24) contrast(1.15) brightness(.72);
+  /* Preserve the camera's real colour while keeping it visually integrated
+     with the warm oracle-bone interface. */
+  filter: saturate(1.12) contrast(1.04) brightness(.94);
 }
 
 .oracle-vision__placeholder {
