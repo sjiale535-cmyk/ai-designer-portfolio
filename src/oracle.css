@@ -323,7 +323,7 @@ body:has(.oracle-site) {
 .oracle-archive-meter span { font-size: 8px; letter-spacing: .25em; }
 .oracle-archive-meter b { color: var(--oracle-gold); font: 500 16px/1 sans-serif; letter-spacing: .08em; }
 .oracle-archive-meter b i { color: rgba(238,232,218,.25); font: normal 8px/1 sans-serif; }
-.oracle-archive-meter ol { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin: 8px 0 0; padding: 0; list-style: none; }
+.oracle-archive-meter ol { display: grid; grid-template-columns: repeat(48, 1fr); gap: 3px; margin: 8px 0 0; padding: 0; list-style: none; }
 .oracle-archive-meter li { height: 2px; background: rgba(238,232,218,.12); transition: background .45s, box-shadow .45s; }
 .oracle-archive-meter li.is-awake { background: var(--oracle-gold); box-shadow: 0 0 8px rgba(221,166,95,.65); }
 .has-selection .oracle-archive-meter { opacity: .16; }

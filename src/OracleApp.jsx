@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import VisionController from './VisionController.jsx'
 import { assetUrl } from './assetUrl.js'
 
@@ -155,8 +155,41 @@ const glyphs = [
   },
 ]
 
-const instances = Array.from({ length: 96 }, (_, index) => ({
-  ...glyphs[index % glyphs.length],
+const supplementalGlyphChars = Array.from('天地风云星光石土金玉竹草花林森牛羊犬豕虎兔蛇虫贝壶酒米麦黍稷果瓜丝衣冠巾刀弓矢戈盾王臣父母子女夫妻家室井泉川河海丘谷东西南北上下左右大小长短生死春夏秋冬朝暮早晚高低内外前后左右')
+
+const createArchivePaths = (seed) => {
+  const value = (step, min, max) => {
+    const raw = Math.sin(seed * 12.9898 + step * 78.233) * 43758.5453
+    return Math.round((min + (raw - Math.floor(raw)) * (max - min)) * 10) / 10
+  }
+  const paths = [
+    `M${value(1, 38, 55)} ${value(2, 8, 18)} Q${value(3, 42, 62)} ${value(4, 34, 46)} ${value(5, 40, 58)} ${value(6, 84, 92)}`,
+    `M${value(7, 12, 25)} ${value(8, 30, 45)} Q${value(9, 34, 44)} ${value(10, 22, 38)} ${value(11, 48, 58)} ${value(12, 42, 54)} Q${value(13, 68, 80)} ${value(14, 35, 48)} ${value(15, 82, 91)} ${value(16, 22, 38)}`,
+    `M${value(17, 18, 32)} ${value(18, 66, 80)} Q${value(19, 40, 50)} ${value(20, 54, 70)} ${value(21, 48, 58)} ${value(22, 44, 58)} Q${value(23, 64, 76)} ${value(24, 58, 74)} ${value(25, 78, 88)} ${value(26, 72, 87)}`,
+  ]
+  if (seed % 2 === 0) paths.push(`M${value(27, 23, 35)} ${value(28, 18, 29)} Q${value(29, 50, 59)} ${value(30, 7, 18)} ${value(31, 73, 84)} ${value(32, 23, 36)}`)
+  if (seed % 3 === 0) paths.push(`M${value(33, 21, 32)} ${value(34, 38, 52)} Q${value(35, 48, 58)} ${value(36, 29, 42)} ${value(37, 76, 86)} ${value(38, 48, 63)}`)
+  if (seed % 5 === 0) paths.push(`M${value(39, 30, 41)} ${value(40, 24, 34)} L${value(41, 68, 79)} ${value(42, 27, 39)} L${value(43, 72, 83)} ${value(44, 72, 84)} Q${value(45, 49, 59)} ${value(46, 91, 96)} ${value(47, 24, 35)} ${value(48, 70, 84)} Z`)
+  return paths
+}
+
+const existingCharacters = new Set(glyphs.map((glyph) => glyph.char))
+const supplementalGlyphs = supplementalGlyphChars
+  .filter((char, index, collection) => !existingCharacters.has(char) && collection.indexOf(char) === index)
+  .slice(0, 96 - glyphs.length)
+  .map((char, index) => ({
+    char,
+    name: `${char} · ARCHIVE ${String(index + glyphs.length + 1).padStart(2, '0')}`,
+    meaning: `古文字「${char}」`,
+    desc: `以独立的刻写骨架呈现“${char}”的古文字意象。折线、弧线与交叉刻痕共同构成这一枚不重复的字形档案。`,
+    phrase: `一画入骨，${char}意相生`,
+    paths: createArchivePaths(index + 37),
+  }))
+
+const glyphArchive = [...glyphs, ...supplementalGlyphs]
+
+const instances = glyphArchive.map((glyph, index) => ({
+  ...glyph,
   id: index,
   seed: (index * 37 + 13) % 101,
 }))
@@ -171,7 +204,7 @@ const oracleTextureStyle = (index) => {
   }
 }
 
-function OracleGlyph({ glyph, className = '', ariaHidden = false }) {
+const OracleGlyph = memo(function OracleGlyph({ glyph, className = '', ariaHidden = false }) {
   const gradientId = `oracle-engraving-${useId().replace(/:/g, '')}`
   return (
     <svg className={`oracle-glyph ${className}`} viewBox="0 0 100 100" aria-hidden={ariaHidden} role={ariaHidden ? undefined : 'img'}>
@@ -193,7 +226,7 @@ function OracleGlyph({ glyph, className = '', ariaHidden = false }) {
       <circle className="oracle-glyph__seal" cx="88" cy="14" r="1.35" />
     </svg>
   )
-}
+})
 
 function InkField({ pointerRef, activeRef }) {
   const canvasRef = useRef(null)
@@ -205,9 +238,11 @@ function InkField({ pointerRef, activeRef }) {
     let width = 0
     let height = 0
     let particles = []
+    let lastRender = 0
+    const frameInterval = 1000 / 30
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       width = window.innerWidth
       height = window.innerHeight
       canvas.width = width * dpr
@@ -215,7 +250,7 @@ function InkField({ pointerRef, activeRef }) {
       canvas.style.width = `${width}px`
       canvas.style.height = `${height}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      particles = Array.from({ length: Math.min(110, Math.floor(width / 12)) }, (_, i) => ({
+      particles = Array.from({ length: Math.min(72, Math.floor(width / 18)) }, (_, i) => ({
         x: (i * 89) % width,
         y: (i * 53) % height,
         r: 0.5 + (i % 5) * 0.32,
@@ -224,7 +259,12 @@ function InkField({ pointerRef, activeRef }) {
       }))
     }
 
-    const render = () => {
+    const render = (time) => {
+      if (document.hidden || time - lastRender < frameInterval) {
+        frame = requestAnimationFrame(render)
+        return
+      }
+      lastRender = time
       ctx.clearRect(0, 0, width, height)
       const pointer = pointerRef.current
       const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 280)
@@ -262,7 +302,7 @@ function InkField({ pointerRef, activeRef }) {
 
 function EvolutionPanel({ glyph, onClose, onNext }) {
   const [phase, setPhase] = useState(0)
-  const glyphIndex = glyphs.findIndex((item) => item.char === glyph.char) + 1
+  const glyphIndex = glyphArchive.findIndex((item) => item.char === glyph.char) + 1
 
   useEffect(() => {
     setPhase(0)
@@ -322,6 +362,7 @@ export default function OracleApp() {
   const focusedNodeRef = useRef(-1)
   const fieldFrozenRef = useRef(false)
   const modeRef = useRef('drift')
+  const depthUiRef = useRef({ value: 1, time: 0 })
   const [selected, setSelected] = useState(null)
   const [mode, setMode] = useState('drift')
   const [depth, setDepth] = useState(1)
@@ -344,10 +385,21 @@ export default function OracleApp() {
       vx: ((i % 5) - 2) * 0.055,
       vy: (((i * 3) % 7) - 3) * 0.04,
       radius: 28 + (i % 4) * 7,
+      opacity: -1,
+      near: false,
+      focused: false,
+      zIndex: -1,
     }))
 
     let frame
+    let lastTick = 0
+    const frameInterval = 1000 / 30
     const tick = (time) => {
+      if (document.hidden || time - lastTick < frameInterval) {
+        frame = requestAnimationFrame(tick)
+        return
+      }
+      lastTick = time
       const w = window.innerWidth
       const h = window.innerHeight
       const pointer = pointerRef.current
@@ -395,15 +447,6 @@ export default function OracleApp() {
           node.vy += Math.cos(time * 0.00019 + i * 1.3) * 0.0008
         }
 
-        if (!isFocused && !fieldFrozenRef.current && activePointerRef.current) {
-          const distanceToPointer = Math.hypot(node.x - pointer.x, node.y - pointer.y)
-          if (distanceToPointer < 260) {
-            const attraction = (1 - distanceToPointer / 260) * 0.00075
-            node.vx += (pointer.x - node.x) * attraction
-            node.vy += (pointer.y - node.y) * attraction
-          }
-        }
-
         if (!isFocused && !fieldFrozenRef.current) {
           node.vx *= 0.996
           node.vy *= 0.996
@@ -422,10 +465,25 @@ export default function OracleApp() {
         const element = nodeRefs.current[i]
         if (element) {
           element.style.transform = `translate3d(${node.x}px, ${node.y}px, 0) translate(-50%, -50%) scale(${scale})`
-          element.style.opacity = Math.min(1, opacity)
-          element.style.zIndex = isFocused ? 18 : (proximity > 0.15 ? 12 : String(1 + (i % 7)))
-          element.dataset.near = isFocused || proximity > 0.36 ? 'true' : 'false'
-          element.dataset.focused = isFocused ? 'true' : 'false'
+          const nextOpacity = Math.min(1, opacity)
+          if (Math.abs(nextOpacity - node.opacity) > 0.01) {
+            node.opacity = nextOpacity
+            element.style.opacity = nextOpacity
+          }
+          const nextZIndex = isFocused ? 18 : (proximity > 0.15 ? 12 : 1 + (i % 7))
+          if (nextZIndex !== node.zIndex) {
+            node.zIndex = nextZIndex
+            element.style.zIndex = nextZIndex
+          }
+          const isNear = isFocused || proximity > 0.36
+          if (isNear !== node.near) {
+            node.near = isNear
+            element.dataset.near = isNear ? 'true' : 'false'
+          }
+          if (isFocused !== node.focused) {
+            node.focused = isFocused
+            element.dataset.focused = isFocused ? 'true' : 'false'
+          }
         }
       })
       frame = requestAnimationFrame(tick)
@@ -464,10 +522,16 @@ export default function OracleApp() {
 
   const setVisionDepth = useCallback((value) => {
     depthRef.current = value
-    setDepth(value)
+    const now = performance.now()
+    const previous = depthUiRef.current
+    if (now - previous.time >= 120 && Math.abs(value - previous.value) >= 0.015) {
+      depthUiRef.current = { value, time: now }
+      setDepth(Math.round(value * 100) / 100)
+    }
   }, [])
 
   const setVisionFreeze = useCallback((value) => {
+    if (fieldFrozenRef.current === value) return
     fieldFrozenRef.current = value
     setFieldFrozen(value)
   }, [])
@@ -513,12 +577,12 @@ export default function OracleApp() {
   }
 
   const awakenRandom = () => {
-    const candidates = glyphs.filter((glyph) => glyph.char !== selected?.char)
+    const candidates = glyphArchive.filter((glyph) => glyph.char !== selected?.char)
     setSelected(candidates[Math.floor(Math.random() * candidates.length)])
   }
 
   const nextGlyph = useCallback(() => {
-    setSelected((current) => glyphs[(Math.max(0, glyphs.findIndex((glyph) => glyph.char === current?.char)) + 1) % glyphs.length])
+    setSelected((current) => glyphArchive[(Math.max(0, glyphArchive.findIndex((glyph) => glyph.char === current?.char)) + 1) % glyphArchive.length])
   }, [])
 
   useEffect(() => {
@@ -542,7 +606,7 @@ export default function OracleApp() {
           <span>字醒</span>
           <strong>中原</strong>
         </a>
-        <div className="oracle-header__center">24 GLYPHS · 96 TRACES <i /> INTERACTIVE ARCHIVE</div>
+        <div className="oracle-header__center">{glyphArchive.length} UNIQUE GLYPHS <i /> INTERACTIVE ARCHIVE</div>
         <a className="oracle-back" href="/">返回作品集 <span>↗</span></a>
       </header>
 
@@ -605,10 +669,10 @@ export default function OracleApp() {
       <div className="oracle-archive-meter" aria-label={`已唤醒 ${awakened.size} 个甲骨文`}>
         <div>
           <span>AWAKENED ARCHIVE</span>
-          <b>{String(awakened.size).padStart(2, '0')}<i>/24</i></b>
+          <b>{String(awakened.size).padStart(2, '0')}<i>/{glyphArchive.length}</i></b>
         </div>
         <ol aria-hidden="true">
-          {glyphs.map((glyph) => <li key={glyph.char} className={awakened.has(glyph.char) ? 'is-awake' : ''} />)}
+          {glyphArchive.map((glyph) => <li key={glyph.char} className={awakened.has(glyph.char) ? 'is-awake' : ''} />)}
         </ol>
       </div>
 
